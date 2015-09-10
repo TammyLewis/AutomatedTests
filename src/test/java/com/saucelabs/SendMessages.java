@@ -31,7 +31,7 @@ public class SendMessages {
 		sessionId = session;
 	}
 
-	Logger log = new Logger(fileName);
+	Logger log = new Logger(fileName, sessionId);
 
 	/**
 	 * 
