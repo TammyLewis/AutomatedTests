@@ -147,11 +147,21 @@ public class SuitDirectTest implements SauceOnDemandSessionIdProvider {
 	
 	@Test
 	public void checkoutJourney() throws Exception {
-
+		
+		String cardError = null;
 		Properties assertCfg = new Properties();
-		InputStream input = new FileInputStream("C:\\Tests\\configs\\" + fileName + ".properties");
-		assertCfg.load(input);
-		String cardError = assertCfg.getProperty("cardError");
+		try {
+			InputStream input = new FileInputStream("C:\\Tests\\configs\\" + fileName + ".properties");
+			assertCfg.load(input);
+			cardError = assertCfg.getProperty("cardError");
+		} catch (FileNotFoundException e) {
+			log.add("Could not find file - C:\\Tests\\configs\\" + fileName + ".properties");
+			System.exit(1);
+		} 
+		if (cardError == null) {
+			log.add("Card error value could not be found in C:\\Tests\\configs\\" + fileName + ".properties");
+			System.exit(1);
+		}
 		
 		SendMessages msg = new SendMessages(testName, fileName, sessionId);
 
@@ -246,7 +256,7 @@ public class SuitDirectTest implements SauceOnDemandSessionIdProvider {
 
 			Thread.sleep(5000);
 			// new WebDriverWait(driver,10).until(ExpectedConditions.presenceOfElementLocated(By.id("formCardDetails")));
-
+			
 			String errorText = driver.findElement(By.id("formCardDetails")).getText();
 			Boolean checkExpected = errorText.contains(cardError);
 			
