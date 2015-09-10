@@ -243,7 +243,7 @@ public class SuitDirectTest implements SauceOnDemandSessionIdProvider {
 			// new WebDriverWait(driver,10).until(ExpectedConditions.presenceOfElementLocated(By.id("formCardDetails")));
 
 			String errorText = driver.findElement(By.id("formCardDetails")).getText();
-			String expected = "The Authorisation has been declined by the bank. Please try a different card.asddddfdf";
+			String expected = "The Authorisation has been declined by the bank. Please try a different card.";
 			Boolean checkExpected = errorText.contains(expected);
 			
 			if (checkExpected == false) {
