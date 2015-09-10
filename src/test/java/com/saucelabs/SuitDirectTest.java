@@ -37,7 +37,7 @@ import com.saucelabs.junit.SauceOnDemandTestWatcher;
 public class SuitDirectTest implements SauceOnDemandSessionIdProvider {
 
 	/**
-	 * Gets SauceLab authentication details from the file C:\\Tests\\SauceLabs.properties
+	 * Gets SauceLab authentication details from the file C:\\Tests\\configs\\SauceLabs.properties
 	 * Exits the program if it can't be found
 	 */	
 	private static String slUser;
@@ -47,14 +47,12 @@ public class SuitDirectTest implements SauceOnDemandSessionIdProvider {
 	public static void sauceLabs() throws IOException {
 		Properties config = new Properties();
 		try {
-			InputStream slCfg = new FileInputStream("C:\\Tests\\SauceLabs.properties");
+			InputStream slCfg = new FileInputStream("C:\\Tests\\configs\\SauceLabs.properties");
 			config.load(slCfg);
 
 			slUser = config.getProperty("user");
 			slAuth = config.getProperty("auth");
-			
-			System.out.println(slUser + slAuth);
-			
+						
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 			System.exit(1);
@@ -110,7 +108,7 @@ public class SuitDirectTest implements SauceOnDemandSessionIdProvider {
 	public static LinkedList browsersStrings() {
 		LinkedList browsers = new LinkedList();
 		// browsers.add(new String[]{"Windows 10", "20.10240", "microsoftedge"});
-		browsers.add(new String[] { "Windows 10", "45.0", "chrome" });
+		browsers.add(new String[] { "Windows 10", "45.0", "chrome"});
 		// browsers.add(new String[]{"Windows 10", "40.0", "firefox"});
 		// browsers.add(new String[]{"Windows 10", "11.0", "internet
 		// explorer"});
@@ -242,19 +240,24 @@ public class SuitDirectTest implements SauceOnDemandSessionIdProvider {
 			 */
 
 			Thread.sleep(5000);
-			// new
-			// WebDriverWait(driver,10).until(ExpectedConditions.presenceOfElementLocated(By.id("formCardDetails")));
+			// new WebDriverWait(driver,10).until(ExpectedConditions.presenceOfElementLocated(By.id("formCardDetails")));
 
-			String errorText = driver.findElement(By.xpath("//*[@id='formCardDetails']/div/div[2]/span")).getText();
-			String expected = "The Authorisation has been declined by the bank. Please try a different card.";
-
-			assertEquals(errorText, expected);
+			String errorText = driver.findElement(By.id("formCardDetails")).getText();
+			String expected = "The Authorisation has been declined by the bank. Please try a different card.asddddfdf";
+			Boolean checkExpected = errorText.contains(expected);
+			
+			if (checkExpected == false) {
+				msg.send("Expected text could not be found. \n\nExpected: " + expected + "\n\nReturned: " + errorText);
+			}
+			
+			assertTrue(checkExpected);
 
 		} catch (Exception e) {
+			String eS = e.toString();
 			log.add("Exception found");
-			log.add(e.toString());
+			log.add(eS);
 
-			msg.send(e);
+			msg.send(eS);
 
 			// Force fail for SauceLabs
 			boolean success = false;
