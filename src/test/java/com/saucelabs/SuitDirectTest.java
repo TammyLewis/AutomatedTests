@@ -78,7 +78,7 @@ public class SuitDirectTest implements SauceOnDemandSessionIdProvider {
 
 	private static String testName = "Suit Direct Checkout"; // TODO Name test
 
-	static String fileName = testName.replaceAll("\\s", ""); // Remove white space from testName for file path use
+	static String fileName = "SuitDirect"; // TODO File name
 
 	/**
 	 * Constructs a new instance of the test. The constructor requires three
@@ -147,6 +147,11 @@ public class SuitDirectTest implements SauceOnDemandSessionIdProvider {
 	
 	@Test
 	public void checkoutJourney() throws Exception {
+
+		Properties assertCfg = new Properties();
+		InputStream input = new FileInputStream("C:\\Tests\\configs\\" + fileName + ".properties");
+		assertCfg.load(input);
+		String cardError = assertCfg.getProperty("cardError");
 		
 		SendMessages msg = new SendMessages(testName, fileName, sessionId);
 
@@ -243,11 +248,10 @@ public class SuitDirectTest implements SauceOnDemandSessionIdProvider {
 			// new WebDriverWait(driver,10).until(ExpectedConditions.presenceOfElementLocated(By.id("formCardDetails")));
 
 			String errorText = driver.findElement(By.id("formCardDetails")).getText();
-			String expected = "The Authorisation has been declined by the bank. Please try a different card.";
-			Boolean checkExpected = errorText.contains(expected);
+			Boolean checkExpected = errorText.contains(cardError);
 			
 			if (checkExpected == false) {
-				msg.send("Expected text could not be found. \n\nExpected: " + expected + "\n\nReturned: " + errorText);
+				msg.send("Expected text could not be found. \n\nExpected: " + cardError + "\n\nReturned: " + errorText);
 			}
 			
 			assertTrue(checkExpected);
