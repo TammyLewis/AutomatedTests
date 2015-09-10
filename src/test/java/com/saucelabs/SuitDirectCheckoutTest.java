@@ -1,6 +1,5 @@
 package com.saucelabs;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.FileInputStream;
@@ -13,7 +12,6 @@ import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.After;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
@@ -34,7 +32,7 @@ import com.saucelabs.junit.ConcurrentParameterized;
 import com.saucelabs.junit.SauceOnDemandTestWatcher;
 
 @RunWith(ConcurrentParameterized.class)
-public class SuitDirectTest implements SauceOnDemandSessionIdProvider {
+public class SuitDirectCheckoutTest implements SauceOnDemandSessionIdProvider {
 
 	/**
 	 * Gets SauceLab authentication details from the file C:\\Tests\\configs\\SauceLabs.properties
@@ -76,9 +74,7 @@ public class SuitDirectTest implements SauceOnDemandSessionIdProvider {
 	private static String sessionId; 	// Instance variable which contains the Sauce Job Id.
 	private WebDriver driver; 			// The {@link WebDriver} instance which is used to perform browser interactions with.
 
-	private static String testName = "Suit Direct Checkout"; // TODO Name test
-
-	static String fileName = "SuitDirect"; // TODO File name
+	private static String fileName = "SuitDirect"; // TODO File name
 
 	/**
 	 * Constructs a new instance of the test. The constructor requires three
@@ -91,7 +87,7 @@ public class SuitDirectTest implements SauceOnDemandSessionIdProvider {
 	 * @param version
 	 * @param browser
 	 */
-	public SuitDirectTest(String os, String version, String browser) {
+	public SuitDirectCheckoutTest(String os, String version, String browser) {
 		super();
 		this.os = os;
 		this.version = version;
@@ -122,13 +118,14 @@ public class SuitDirectTest implements SauceOnDemandSessionIdProvider {
 	 * and {@link #os} instance variables, and which is configured to run
 	 * against ondemand.saucelabs.com, using the username and access key
 	 * populated by the {@link #authentication} instance.
+	 * @return 
 	 *
 	 * @throws Exception
 	 *             if an error occurs during the creation of the
 	 *             {@link RemoteWebDriver} instance.
 	 */
-	@Before
-	public void setUp() throws Exception {
+
+	public void setUp(String testName) throws Exception {
 
 		DesiredCapabilities capabilities = new DesiredCapabilities();
 		capabilities.setCapability(CapabilityType.BROWSER_NAME, browser);
@@ -139,14 +136,17 @@ public class SuitDirectTest implements SauceOnDemandSessionIdProvider {
 		capabilities.setCapability("name", testName);
 		this.driver = new RemoteWebDriver(new URL("http://" + authentication.getUsername() + ":"
 				+ authentication.getAccessKey() + "@ondemand.saucelabs.com:80/wd/hub"), capabilities);
-		SuitDirectTest.sessionId = (((RemoteWebDriver) driver).getSessionId()).toString();
-		
+		SuitDirectCheckoutTest.sessionId = (((RemoteWebDriver) driver).getSessionId()).toString();
 	}
-
-	Logger log = new Logger(fileName);
 	
 	@Test
 	public void checkoutJourney() throws Exception {
+		
+		String testName = "Suit Direct Checkout"; // TODO Test Name
+		setUp(testName);
+		
+		Logger log = new Logger(fileName, sessionId);
+		log.add("Starting test");
 		
 		String cardError = null;
 		Properties assertCfg = new Properties();
@@ -165,7 +165,6 @@ public class SuitDirectTest implements SauceOnDemandSessionIdProvider {
 		
 		SendMessages msg = new SendMessages(testName, fileName, sessionId);
 
-		log.add("Starting test with Session ID " + sessionId);
 
 		try {
 
@@ -249,13 +248,7 @@ public class SuitDirectTest implements SauceOnDemandSessionIdProvider {
 
 			driver.findElement(By.id("proceedButton")).click();
 
-			/**
-			 * Doesn't work without sleep. No idea why. WebDriverWait for #formCardDetails only works when sleep is present. 
-			 * TODO Figure out why this doesn't work without a goddamn sleep
-			 */
-
 			Thread.sleep(5000);
-			// new WebDriverWait(driver,10).until(ExpectedConditions.presenceOfElementLocated(By.id("formCardDetails")));
 			
 			String errorText = driver.findElement(By.id("formCardDetails")).getText();
 			Boolean checkExpected = errorText.contains(cardError);
@@ -272,8 +265,8 @@ public class SuitDirectTest implements SauceOnDemandSessionIdProvider {
 			log.add(eS);
 
 			msg.send(eS);
-
-			// Force fail for SauceLabs
+			
+			// Force fail for Sauce Labs
 			boolean success = false;
 			assertTrue(success);
 		}
@@ -287,7 +280,8 @@ public class SuitDirectTest implements SauceOnDemandSessionIdProvider {
 	 */
 	@After
 	public void tearDown() throws Exception {
-		log.add("Test finished");
+		Logger log = new Logger(fileName, sessionId);
+		log.add("Test with ID " + sessionId + " finished");
 		log.add("Test details: http://saucelabs.com/tests/" + sessionId);
 		driver.quit();
 	}
