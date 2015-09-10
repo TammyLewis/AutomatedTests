@@ -12,13 +12,15 @@ import java.util.TimeZone;
 public class Logger {
 
 	private String fileName;
+	private String sessionId;
 
-	Logger(String path) {
+	Logger(String path, String session) {
 		fileName = path;
+		sessionId = session;
 	}
 
 	public void add(String message) throws IOException {
-		File file = new File("C:\\Tests\\logs\\" + fileName + ".txt");
+		File file = new File("C:\\Tests\\logs\\" + fileName + " - " + sessionId + ".txt");
 
 		Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Europe/Lisbon"));
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
