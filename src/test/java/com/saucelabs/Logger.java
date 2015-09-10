@@ -18,7 +18,7 @@ public class Logger {
 	}
 
 	public void add(String message) throws IOException {
-		File file = new File("C:\\Tests\\Checkout\\logs\\" + fileName + ".txt");
+		File file = new File("C:\\Tests\\logs\\" + fileName + ".txt");
 
 		Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Europe/Lisbon"));
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");

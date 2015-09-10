@@ -55,7 +55,7 @@ public class SendMessages {
 	 * @throws AddressException
 	 * 
 	 */
-	public void send(Exception e) throws IOException, AddressException, MessagingException {
+	public void send(String e) throws IOException, AddressException, MessagingException {
 
 		log.add("Starting messaging process");
 
@@ -63,7 +63,7 @@ public class SendMessages {
 		Properties config = new Properties();
 		InputStream email;
 		try {
-			email = new FileInputStream("C:\\Tests\\Checkout\\configs\\EmailSettings.properties");
+			email = new FileInputStream("C:\\Tests\\configs\\EmailSettings.properties");
 
 			config.load(email);
 
@@ -88,7 +88,7 @@ public class SendMessages {
 			session.setDebug(debug);
 
 			try {
-				InputStream input = new FileInputStream("C:\\Tests\\Checkout\\configs\\" + fileName + ".properties");
+				InputStream input = new FileInputStream("C:\\Tests\\configs\\" + fileName + ".properties");
 				config.load(input);
 
 				// Get emails from config - only send if not null
@@ -109,7 +109,7 @@ public class SendMessages {
 					// Setting the Subject and Content Type
 					msg.setSubject("Test \"" + testName + "\" has failed.");
 					msg.setContent(
-							"Failed with an exception - details below" + "\n\n"
+							"This test failed the assertion or failed with an exception - details below" + "\n\n"
 									+ "Sauce Labs: http://saucelabs.com/tests/" + sessionId + "\n \n" + e,
 							"text/plain");
 					Transport.send(msg);
@@ -120,7 +120,7 @@ public class SendMessages {
 				}
 
 			} catch (FileNotFoundException listFnf) {
-				log.add("Could not find file - C:\\Tests\\Checkout\\configs\\" + fileName + ".properties");
+				log.add("Could not find file - C:\\Tests\\configs\\" + fileName + ".properties");
 			}
 
 			// Get numbers from config - only try if not null
@@ -131,7 +131,7 @@ public class SendMessages {
 
 				// Get SMS Config
 				try {
-					InputStream sms = new FileInputStream("C:\\Tests\\Checkout\\configs\\SMSSettings.properties");
+					InputStream sms = new FileInputStream("C:\\Tests\\configs\\SMSSettings.properties");
 					config.load(sms);
 					String smsUser = config.getProperty("user");
 					String smsToken = config.getProperty("token");
@@ -154,7 +154,7 @@ public class SendMessages {
 					// Check whether to send SMS
 					if (day == 2 || day == 6 || day == 7 || hour >= 18 || hour <= 8) {
 
-						log.add("SMS Conditions met.");
+						log.add("SMS conditions met.");
 
 						Message smsMsg = new MimeMessage(session);
 						InternetAddress smsFrom = new InternetAddress(username);
@@ -178,15 +178,17 @@ public class SendMessages {
 
 						Transport.send(smsMsg);
 						log.add("SMS messages sent");
+					} else {
+						log.add("SMS conditions not met - no messages sent.");
 					}
 				} catch (FileNotFoundException ssFnf) {
-					log.add("Could not find file - C:\\Tests\\Checkout\\configs\\SMSSettings.properties");
+					log.add("Could not find file - C:\\Tests\\configs\\SMSSettings.properties");
 				}
 
 			}
 
 		} catch (FileNotFoundException esFnf) {
-			log.add("Could not find file - C:\\Tests\\Checkout\\configs\\EmailSettings.properties");
+			log.add("Could not find file - C:\\Tests\\configs\\EmailSettings.properties");
 		}
 	}
 }
