@@ -84,10 +84,6 @@ public class SuitDirectCheckoutTest implements SauceOnDemandSessionIdProvider {
 	 * browser to be used when launching a Sauce VM. The order of the parameters
 	 * should be the same as that of the elements within the
 	 * {@link #browsersStrings()} method.
-	 * 
-	 * @param os
-	 * @param version
-	 * @param browser
 	 */
 	public SuitDirectCheckoutTest(String os, String version, String browser) {
 		super();
@@ -104,7 +100,7 @@ public class SuitDirectCheckoutTest implements SauceOnDemandSessionIdProvider {
 	 */
 	@ConcurrentParameterized.Parameters
 	public static LinkedList browsersStrings() {
-		LinkedList browsers = new LinkedList();
+		LinkedList<String[]> browsers = new LinkedList<String[]>();
 		// browsers.add(new String[]{"Windows 10", "20.10240", "microsoftedge"});
 		browsers.add(new String[] { "Windows 10", "45.0", "chrome"});
 		// browsers.add(new String[]{"Windows 10", "40.0", "firefox"});
@@ -120,7 +116,6 @@ public class SuitDirectCheckoutTest implements SauceOnDemandSessionIdProvider {
 	 * and {@link #os} instance variables, and which is configured to run
 	 * against ondemand.saucelabs.com, using the username and access key
 	 * populated by the {@link #authentication} instance.
-	 * @return 
 	 *
 	 * @throws Exception
 	 *             if an error occurs during the creation of the
@@ -187,8 +182,8 @@ public class SuitDirectCheckoutTest implements SauceOnDemandSessionIdProvider {
 			driver.findElement(By.xpath("//*[@id='search']/a")).click();
 
 			// Checks if product can not be found. Iterate through array until a product is found.
-			if ((driver.findElement(By.className("itemListContainer")).getText()
-					.contains("Sorry no products were found.")) == true) {
+			if (!(driver.findElement(By.className("itemListContainer")).getText()
+					.contains("Sorry no products were found."))) {
 				for (int i = 1; i < products.length; i++) {
 					driver.findElement(By.name("search")).clear();
 
@@ -197,8 +192,8 @@ public class SuitDirectCheckoutTest implements SauceOnDemandSessionIdProvider {
 					driver.findElement(By.xpath("//*[@id='search']/a")).click();
 
 					// Check if product is found, exit loop if present
-					if ((driver.findElement(By.className("itemListContainer")).getText()
-							.contains("Sorry no products were found.")) == false) {
+					if (!(driver.findElement(By.className("itemListContainer")).getText()
+							.contains("Sorry no products were found."))) {
 						break;
 					}
 				}
@@ -251,7 +246,7 @@ public class SuitDirectCheckoutTest implements SauceOnDemandSessionIdProvider {
 			String errorText = driver.findElement(By.id("formCardDetails")).getText();
 			Boolean checkExpected = errorText.contains(cardError);
 			
-			if (checkExpected == false) {
+			if (!checkExpected) {
 				msg.send("Expected text could not be found. \n\nExpected: " + cardError + "\n\nReturned: " + errorText);
 			}
 			
@@ -265,8 +260,7 @@ public class SuitDirectCheckoutTest implements SauceOnDemandSessionIdProvider {
 			msg.send(eS);
 			
 			// Force fail for Sauce Labs
-			boolean success = false;
-			assertTrue(success);
+			assertTrue(false);
 		}
 
 	}

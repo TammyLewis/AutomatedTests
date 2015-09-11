@@ -27,17 +27,23 @@ public class Logger {
 
 		String time = sdf.format(calendar.getTime());
 
-		if (!file.exists()) {
-			file.createNewFile();
-		}
+        if (!file.exists()) {
+            Boolean fc = file.createNewFile();
+            if (!fc) {
+                System.out.println("File could not be created");
+                System.exit(1);
+            } else {
+                System.out.println("File was created");
+            }
+        }
 
-		FileWriter fw = new FileWriter(file, true);
-		BufferedWriter bw = new BufferedWriter(fw);
-		PrintWriter pw = new PrintWriter(bw);
+        FileWriter fw = new FileWriter(file, true);
+        BufferedWriter bw = new BufferedWriter(fw);
+        PrintWriter pw = new PrintWriter(bw);
 
-		System.out.println(time + " " + message);
-		pw.println(time + " " + message);
+        System.out.println(time + " " + message);
+        pw.println(time + " " + message);
 
-		pw.close();
+        pw.close();
 	}
 }

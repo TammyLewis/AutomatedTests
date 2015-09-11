@@ -54,7 +54,7 @@ public class SendMessages {
 	 * @throws AddressException
 	 * 
 	 */
-	public void send(String e) throws IOException, AddressException, MessagingException {
+	public void send(String e) throws IOException, MessagingException {
 
 		Logger log = new Logger(fileName, sessionId);
 		log.add("Starting messaging process");
@@ -77,15 +77,14 @@ public class SendMessages {
 			props.put("mail.smtp.host", config.getProperty("smtp"));
 			props.put("mail.smtp.port", config.getProperty("smtpPort"));
 
-			// TODO Email debugger
-			boolean debug = false;
-
 			Session session = Session.getInstance(props, new Authenticator() {
 				protected PasswordAuthentication getPasswordAuthentication() {
 					return new PasswordAuthentication(username, password);
 				}
 			});
-			session.setDebug(debug);
+
+			// TODO Email debugger
+			session.setDebug(false);
 
 			try {
 				InputStream input = new FileInputStream("C:\\Tests\\configs\\" + fileName + ".properties");
@@ -143,7 +142,7 @@ public class SendMessages {
 					SimpleDateFormat daySdf = new SimpleDateFormat("u");
 
 					// Get hour and convert to int
-					Integer hour = Integer.parseInt(hourSdf.format(calendar.getTime()).toString());
+					Integer hour = Integer.parseInt(hourSdf.format(calendar.getTime()));
 
 					// Get day and convert to int
 					Integer day = Integer.parseInt(daySdf.format(calendar.getTime()));

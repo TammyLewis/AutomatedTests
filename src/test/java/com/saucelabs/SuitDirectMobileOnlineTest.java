@@ -77,10 +77,6 @@ public class SuitDirectMobileOnlineTest implements SauceOnDemandSessionIdProvide
 	 * browser to be used when launching a Sauce VM. The order of the parameters
 	 * should be the same as that of the elements within the
 	 * {@link #browsersStrings()} method.
-	 * 
-	 * @param os
-	 * @param version
-	 * @param browser
 	 */
 	public SuitDirectMobileOnlineTest(String os, String version, String browser) {
 		super();
@@ -97,7 +93,7 @@ public class SuitDirectMobileOnlineTest implements SauceOnDemandSessionIdProvide
 	 */
 	@ConcurrentParameterized.Parameters
 	public static LinkedList browsersStrings() {
-		LinkedList browsers = new LinkedList();
+		LinkedList<String[]> browsers = new LinkedList<String[]>();
 		// browsers.add(new String[]{"Windows 10", "20.10240", "microsoftedge"});
 		browsers.add(new String[] { "Windows 10", "45.0", "chrome"});
 		// browsers.add(new String[]{"Windows 10", "40.0", "firefox"});
@@ -113,7 +109,6 @@ public class SuitDirectMobileOnlineTest implements SauceOnDemandSessionIdProvide
 	 * and {@link #os} instance variables, and which is configured to run
 	 * against ondemand.saucelabs.com, using the username and access key
 	 * populated by the {@link #authentication} instance.
-	 * @return 
 	 *
 	 * @throws Exception
 	 *             if an error occurs during the creation of the
@@ -163,7 +158,7 @@ public class SuitDirectMobileOnlineTest implements SauceOnDemandSessionIdProvide
 		String title = driver.getTitle();
 		Boolean success = title.equals(expected);
 		
-		if (success == false) {
+		if (!success) {
 			log.add("Retrieved title did not match the expected title");
 			log.add("Expected: " + expected);
 			log.add("Retrieved: " + title);
