@@ -11,6 +11,7 @@ import java.net.URL;
 import java.util.LinkedList;
 import java.util.Properties;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
@@ -67,6 +68,7 @@ public class SuitDirectOnlineTest implements SauceOnDemandSessionIdProvider {
 	private static String sessionId; 	// Instance variable which contains the Sauce Job Id.
 	private WebDriver driver; 			// The {@link WebDriver} instance which is used to perform browser interactions with.
 
+	private static String testName = "Suit Direct Title"; // TODO Test Name
 	private static String fileName = "SuitDirect"; // TODO File name
 
 	/**
@@ -117,8 +119,8 @@ public class SuitDirectOnlineTest implements SauceOnDemandSessionIdProvider {
 	 *             if an error occurs during the creation of the
 	 *             {@link RemoteWebDriver} instance.
 	 */
-
-	public void setUp(String testName) throws Exception {
+	@Before
+	public void setUp() throws Exception {
 
 		DesiredCapabilities capabilities = new DesiredCapabilities();
 		capabilities.setCapability(CapabilityType.BROWSER_NAME, browser);
@@ -135,9 +137,7 @@ public class SuitDirectOnlineTest implements SauceOnDemandSessionIdProvider {
 	@Test
 	public void checkTitle() throws Exception {
 
-		String testName = "Suit Direct Title"; // TODO Test Name
-		setUp(testName);
-				
+		SendMessages msg = new SendMessages(testName, fileName, sessionId);
 		Logger log = new Logger(fileName, sessionId);
 
 		log.add("Starting test");
@@ -161,8 +161,17 @@ public class SuitDirectOnlineTest implements SauceOnDemandSessionIdProvider {
 		
 		driver.get("http://www.suitdirect.co.uk");
 		String title = driver.getTitle();
-		Boolean success = title.contains(expected);
+		Boolean success = title.equals(expected);
 		
+		if (success == false) {
+			log.add("Retrieved title did not match the expected title");
+			log.add("Expected: " + expected);
+			log.add("Retrieved: " + title);
+			msg.send("Retrieved title did not match the expected title \n\nExpected: " + expected + "\nRetrieved: " + title);
+		} else {
+			log.add("Expected title matched retrieved title");
+		}
+
 		assertTrue(success);
 	}
 
