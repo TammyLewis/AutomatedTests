@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedList;
 import java.util.Properties;
 import org.junit.After;
@@ -146,8 +147,8 @@ public class SuitDirectDesktopOnlineTest implements SauceOnDemandSessionIdProvid
 		Properties assertCfg = new Properties();
 		try {
 			InputStream input = new FileInputStream("C:\\Tests\\configs\\" + fileName + ".properties");
-			InputStreamReader inputReader = new InputStreamReader(input, "UTF-8");
-			assertCfg.load(inputReader);
+			InputStreamReader inputEncoded = new InputStreamReader(input, StandardCharsets.UTF_8);
+			assertCfg.load(inputEncoded);
 			expected = assertCfg.getProperty("title.desktop");
 			
 		} catch (FileNotFoundException e) {
