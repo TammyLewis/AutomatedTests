@@ -12,6 +12,7 @@ import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.After;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
@@ -74,6 +75,7 @@ public class SuitDirectCheckoutTest implements SauceOnDemandSessionIdProvider {
 	private static String sessionId; 	// Instance variable which contains the Sauce Job Id.
 	private WebDriver driver; 			// The {@link WebDriver} instance which is used to perform browser interactions with.
 
+	private static String testName = "Suit Direct Checkout"; // TODO Test Name
 	private static String fileName = "SuitDirect"; // TODO File name
 
 	/**
@@ -124,8 +126,8 @@ public class SuitDirectCheckoutTest implements SauceOnDemandSessionIdProvider {
 	 *             if an error occurs during the creation of the
 	 *             {@link RemoteWebDriver} instance.
 	 */
-
-	public void setUp(String testName) throws Exception {
+	@Before
+	public void setUp() throws Exception {
 
 		DesiredCapabilities capabilities = new DesiredCapabilities();
 		capabilities.setCapability(CapabilityType.BROWSER_NAME, browser);
@@ -141,9 +143,6 @@ public class SuitDirectCheckoutTest implements SauceOnDemandSessionIdProvider {
 	
 	@Test
 	public void checkoutJourney() throws Exception {
-		
-		String testName = "Suit Direct Checkout"; // TODO Test Name
-		setUp(testName);
 		
 		Logger log = new Logger(fileName, sessionId);
 		log.add("Starting test");
@@ -162,9 +161,8 @@ public class SuitDirectCheckoutTest implements SauceOnDemandSessionIdProvider {
 			log.add("Card error value could not be found in C:\\Tests\\configs\\" + fileName + ".properties");
 			System.exit(1);
 		}
-		
-		SendMessages msg = new SendMessages(testName, fileName, sessionId);
 
+		SendMessages msg = new SendMessages(testName, fileName, sessionId);
 
 		try {
 
