@@ -26,7 +26,7 @@ import com.saucelabs.junit.ConcurrentParameterized;
 import com.saucelabs.junit.SauceOnDemandTestWatcher;
 
 @RunWith(ConcurrentParameterized.class)
-public class SuitDirectOnlineTest implements SauceOnDemandSessionIdProvider {
+public class SuitDirectMobileOnlineTest implements SauceOnDemandSessionIdProvider {
 
 	/**
 	 * Gets SauceLab authentication details from the file C:\\Tests\\configs\\SauceLabs.properties
@@ -68,7 +68,7 @@ public class SuitDirectOnlineTest implements SauceOnDemandSessionIdProvider {
 	private static String sessionId; 	// Instance variable which contains the Sauce Job Id.
 	private WebDriver driver; 			// The {@link WebDriver} instance which is used to perform browser interactions with.
 
-	private static String testName = "Suit Direct Title"; // TODO Test Name
+	String testName = "Suit Direct Online (Mobile)"; // TODO Test Name
 	private static String fileName = "SuitDirect"; // TODO File name
 
 	/**
@@ -82,7 +82,7 @@ public class SuitDirectOnlineTest implements SauceOnDemandSessionIdProvider {
 	 * @param version
 	 * @param browser
 	 */
-	public SuitDirectOnlineTest(String os, String version, String browser) {
+	public SuitDirectMobileOnlineTest(String os, String version, String browser) {
 		super();
 		this.os = os;
 		this.version = version;
@@ -131,12 +131,12 @@ public class SuitDirectOnlineTest implements SauceOnDemandSessionIdProvider {
 		capabilities.setCapability("name", testName);
 		this.driver = new RemoteWebDriver(new URL("http://" + authentication.getUsername() + ":"
 				+ authentication.getAccessKey() + "@ondemand.saucelabs.com:80/wd/hub"), capabilities);
-		SuitDirectOnlineTest.sessionId = (((RemoteWebDriver) driver).getSessionId()).toString();
+		SuitDirectMobileOnlineTest.sessionId = (((RemoteWebDriver) driver).getSessionId()).toString();
 	}
 	
 	@Test
-	public void checkTitle() throws Exception {
-
+	public void checkTitleMobile() throws Exception {
+		
 		SendMessages msg = new SendMessages(testName, fileName, sessionId);
 		Logger log = new Logger(fileName, sessionId);
 
@@ -148,7 +148,7 @@ public class SuitDirectOnlineTest implements SauceOnDemandSessionIdProvider {
 			InputStream input = new FileInputStream("C:\\Tests\\configs\\" + fileName + ".properties");
 			InputStreamReader inputReader = new InputStreamReader(input, "UTF-8");
 			assertCfg.load(inputReader);
-			expected = assertCfg.getProperty("title");
+			expected = assertCfg.getProperty("title.mobile");
 			
 		} catch (FileNotFoundException e) {
 			log.add("Could not find file - C:\\Tests\\configs\\" + fileName + ".properties");
@@ -159,7 +159,7 @@ public class SuitDirectOnlineTest implements SauceOnDemandSessionIdProvider {
 			System.exit(1);
 		}
 		
-		driver.get("http://www.suitdirect.co.uk");
+		driver.get("http://m.suitdirect.co.uk");
 		String title = driver.getTitle();
 		Boolean success = title.equals(expected);
 		
