@@ -109,8 +109,7 @@ public class SendMessages {
 					// Setting the Subject and Content Type
 					msg.setSubject("Test \"" + testName + "\" has failed.");
 					msg.setContent(
-							"This test failed the assertion or failed with an exception - details below" + "\n\n"
-									+ "Sauce Labs: http://saucelabs.com/tests/" + sessionId + "\n \n" + e,
+							"Sauce Labs: http://saucelabs.com/tests/" + sessionId + "\n \n" + e,
 							"text/plain");
 					Transport.send(msg);
 					log.add("Emails sent");
