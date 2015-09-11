@@ -30,8 +30,7 @@ public class SendMessages {
 		testName = test;
 		sessionId = session;
 	}
-
-	Logger log = new Logger(fileName, sessionId);
+	
 
 	/**
 	 * 
@@ -57,6 +56,7 @@ public class SendMessages {
 	 */
 	public void send(String e) throws IOException, AddressException, MessagingException {
 
+		Logger log = new Logger(fileName, sessionId);
 		log.add("Starting messaging process");
 
 		// Get Email Config
