@@ -163,7 +163,7 @@ public class SuitDirectCheckoutTest implements SauceOnDemandSessionIdProvider {
 
 			driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 
-			WebDriverWait wait = new WebDriverWait(driver, 5);
+			WebDriverWait wait = new WebDriverWait(driver, 10);
 
 			String[] products = { "TE910975", "TE910976", "TE910977", "TE910978", "SC910787", "AS910947", "SC910786",
 					"SC910905", "SC910792", "SC910900", "SC910902", "SC910901", "TE9140450", "LH920678", "TE920979",
@@ -241,8 +241,10 @@ public class SuitDirectCheckoutTest implements SauceOnDemandSessionIdProvider {
 
 			driver.findElement(By.id("proceedButton")).click();
 
-			Thread.sleep(5000);
-			
+			driver.switchTo().defaultContent();
+			driver.switchTo().frame(iframe);
+			wait.until(ExpectedConditions.invisibilityOfElementWithText(By.className("bodytextbold"), "Please wait while your transaction is authorised with the bank."));
+
 			String errorText = driver.findElement(By.id("formCardDetails")).getText();
 			Boolean checkExpected = errorText.contains(cardError);
 			
