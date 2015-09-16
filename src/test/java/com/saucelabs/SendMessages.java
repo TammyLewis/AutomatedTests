@@ -25,7 +25,7 @@ public class SendMessages {
 	private String fileName;
 	private String sessionId;
 
-	SendMessages(String test, String path, String session) {
+	public SendMessages(String test, String path, String session) {
 		fileName = path;
 		testName = test;
 		sessionId = session;
@@ -37,15 +37,15 @@ public class SendMessages {
 	 * Sends emails and SMS (using email to SMS) using JavaMail. 
 	 * 
 	 * Config for email setup is read from:
-	 * C:\Tests\Checkout\configs\EmailSettings.properties
+	 * C:\Tests\tests\configs\EmailSettings.properties
 	 * Required settings: requiresAuth, tlsEnabled, smtp, mtpPort, username, password
 	 * 
 	 * Emails and numbers used to send are read from:
-	 * C:\Tests\Checkout\configs\[Test Name Without Spaces].properties
+	 * C:\Tests\tests\configs\[Test Name Without Spaces].properties
 	 * Required settings: comma separated emails and phone numbers using keys email and number - can be empty
 	 * 
 	 * Config for SMS setup is read from:
-	 * C:\Tests\Checkout\configs\SMSSettings.properties
+	 * C:\Tests\tests\configs\SMSSettings.properties
 	 * Required settings: user, token, domain, subject
 	 * SMS messages will send Saturday, Sunday and weekdays between 6pm and 8am
 	 * 
@@ -150,7 +150,7 @@ public class SendMessages {
 					log.add("Day is " + day + ", hour is " + hour);
 
 					// Check whether to send SMS
-					if (day == 2 || day == 6 || day == 7 || hour >= 18 || hour <= 8) {
+					if (day == 6 || day == 7 || hour >= 18 || hour <= 8) {
 
 						log.add("SMS conditions met.");
 

@@ -1,4 +1,4 @@
-package com.saucelabs;
+package com.saucelabs.tests.online;
 
 import static org.junit.Assert.assertTrue;
 
@@ -8,9 +8,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.LinkedList;
 import java.util.Properties;
+
+import com.saucelabs.Logger;
+import com.saucelabs.SendMessages;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -27,7 +29,7 @@ import com.saucelabs.junit.ConcurrentParameterized;
 import com.saucelabs.junit.SauceOnDemandTestWatcher;
 
 @RunWith(ConcurrentParameterized.class)
-public class SuitDirectDesktopOnlineTest implements SauceOnDemandSessionIdProvider {
+public class SuitDirectMobileOnlineTest implements SauceOnDemandSessionIdProvider {
 
 	/**
 	 * Gets SauceLab authentication details from the file C:\\Tests\\configs\\SauceLabs.properties
@@ -69,7 +71,7 @@ public class SuitDirectDesktopOnlineTest implements SauceOnDemandSessionIdProvid
 	private static String sessionId; 	// Instance variable which contains the Sauce Job Id.
 	private WebDriver driver; 			// The {@link WebDriver} instance which is used to perform browser interactions with.
 
-	private static String testName = "Suit Direct Online (Desktop)"; // TODO Test Name
+	String testName = "Suit Direct Online (Mobile)"; // TODO Test Name
 	private static String fileName = "SuitDirect"; // TODO File name
 
 	/**
@@ -78,12 +80,8 @@ public class SuitDirectDesktopOnlineTest implements SauceOnDemandSessionIdProvid
 	 * browser to be used when launching a Sauce VM. The order of the parameters
 	 * should be the same as that of the elements within the
 	 * {@link #browsersStrings()} method.
-	 * 
-	 * @param os
-	 * @param version
-	 * @param browser
 	 */
-	public SuitDirectDesktopOnlineTest(String os, String version, String browser) {
+	public SuitDirectMobileOnlineTest(String os, String version, String browser) {
 		super();
 		this.os = os;
 		this.version = version;
@@ -98,7 +96,7 @@ public class SuitDirectDesktopOnlineTest implements SauceOnDemandSessionIdProvid
 	 */
 	@ConcurrentParameterized.Parameters
 	public static LinkedList browsersStrings() {
-		LinkedList browsers = new LinkedList();
+		LinkedList<String[]> browsers = new LinkedList<String[]>();
 		// browsers.add(new String[]{"Windows 10", "20.10240", "microsoftedge"});
 		browsers.add(new String[] { "Windows 10", "45.0", "chrome"});
 		// browsers.add(new String[]{"Windows 10", "40.0", "firefox"});
@@ -114,7 +112,6 @@ public class SuitDirectDesktopOnlineTest implements SauceOnDemandSessionIdProvid
 	 * and {@link #os} instance variables, and which is configured to run
 	 * against ondemand.saucelabs.com, using the username and access key
 	 * populated by the {@link #authentication} instance.
-	 * @return 
 	 *
 	 * @throws Exception
 	 *             if an error occurs during the creation of the
@@ -132,11 +129,11 @@ public class SuitDirectDesktopOnlineTest implements SauceOnDemandSessionIdProvid
 		capabilities.setCapability("name", testName);
 		this.driver = new RemoteWebDriver(new URL("http://" + authentication.getUsername() + ":"
 				+ authentication.getAccessKey() + "@ondemand.saucelabs.com:80/wd/hub"), capabilities);
-		SuitDirectDesktopOnlineTest.sessionId = (((RemoteWebDriver) driver).getSessionId()).toString();
+		SuitDirectMobileOnlineTest.sessionId = (((RemoteWebDriver) driver).getSessionId()).toString();
 	}
 	
 	@Test
-	public void checkTitleMain() throws Exception {
+	public void checkTitleMobile() throws Exception {
 		
 		SendMessages msg = new SendMessages(testName, fileName, sessionId);
 		Logger log = new Logger(fileName, sessionId);
@@ -147,9 +144,9 @@ public class SuitDirectDesktopOnlineTest implements SauceOnDemandSessionIdProvid
 		Properties assertCfg = new Properties();
 		try {
 			InputStream input = new FileInputStream("C:\\Tests\\configs\\" + fileName + ".properties");
-			InputStreamReader inputEncoded = new InputStreamReader(input, StandardCharsets.UTF_8);
-			assertCfg.load(inputEncoded);
-			expected = assertCfg.getProperty("title.desktop");
+			InputStreamReader inputReader = new InputStreamReader(input, "UTF-8");
+			assertCfg.load(inputReader);
+			expected = assertCfg.getProperty("title.mobile");
 			
 		} catch (FileNotFoundException e) {
 			log.add("Could not find file - C:\\Tests\\configs\\" + fileName + ".properties");
@@ -160,11 +157,11 @@ public class SuitDirectDesktopOnlineTest implements SauceOnDemandSessionIdProvid
 			System.exit(1);
 		}
 		
-		driver.get("http://www.suitdirect.co.uk");
+		driver.get("http://m.suitdirect.co.uk");
 		String title = driver.getTitle();
 		Boolean success = title.equals(expected);
 		
-		if (success == false) {
+		if (!success) {
 			log.add("Retrieved title did not match the expected title");
 			log.add("Expected: " + expected);
 			log.add("Retrieved: " + title);

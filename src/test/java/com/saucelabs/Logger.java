@@ -14,7 +14,7 @@ public class Logger {
 	private String fileName;
 	private String sessionId;
 
-	Logger(String path, String session) {
+	public Logger(String path, String session) {
 		fileName = path;
 		sessionId = session;
 	}

@@ -1,4 +1,5 @@
-package com.saucelabs;
+package com.saucelabs.tests.checkout;
+
 
 import static org.junit.Assert.assertTrue;
 
@@ -6,27 +7,36 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.LinkedList;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
+
+import com.saucelabs.Logger;
+import com.saucelabs.SendMessages;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
 import com.saucelabs.common.SauceOnDemandAuthentication;
 import com.saucelabs.common.SauceOnDemandSessionIdProvider;
 import com.saucelabs.junit.ConcurrentParameterized;
 import com.saucelabs.junit.SauceOnDemandTestWatcher;
 
 @RunWith(ConcurrentParameterized.class)
-public class SuitDirectMobileOnlineTest implements SauceOnDemandSessionIdProvider {
+public class SuitDirectCheckoutTest implements SauceOnDemandSessionIdProvider {
 
 	/**
 	 * Gets SauceLab authentication details from the file C:\\Tests\\configs\\SauceLabs.properties
@@ -68,7 +78,7 @@ public class SuitDirectMobileOnlineTest implements SauceOnDemandSessionIdProvide
 	private static String sessionId; 	// Instance variable which contains the Sauce Job Id.
 	private WebDriver driver; 			// The {@link WebDriver} instance which is used to perform browser interactions with.
 
-	String testName = "Suit Direct Online (Mobile)"; // TODO Test Name
+	private static String testName = "Suit Direct Checkout"; // TODO Test Name
 	private static String fileName = "SuitDirect"; // TODO File name
 
 	/**
@@ -78,7 +88,7 @@ public class SuitDirectMobileOnlineTest implements SauceOnDemandSessionIdProvide
 	 * should be the same as that of the elements within the
 	 * {@link #browsersStrings()} method.
 	 */
-	public SuitDirectMobileOnlineTest(String os, String version, String browser) {
+	public SuitDirectCheckoutTest(String os, String version, String browser) {
 		super();
 		this.os = os;
 		this.version = version;
@@ -126,48 +136,138 @@ public class SuitDirectMobileOnlineTest implements SauceOnDemandSessionIdProvide
 		capabilities.setCapability("name", testName);
 		this.driver = new RemoteWebDriver(new URL("http://" + authentication.getUsername() + ":"
 				+ authentication.getAccessKey() + "@ondemand.saucelabs.com:80/wd/hub"), capabilities);
-		SuitDirectMobileOnlineTest.sessionId = (((RemoteWebDriver) driver).getSessionId()).toString();
+		SuitDirectCheckoutTest.sessionId = (((RemoteWebDriver) driver).getSessionId()).toString();
 	}
 	
 	@Test
-	public void checkTitleMobile() throws Exception {
+	public void checkoutJourney() throws Exception {
 		
-		SendMessages msg = new SendMessages(testName, fileName, sessionId);
 		Logger log = new Logger(fileName, sessionId);
-
 		log.add("Starting test");
 		
-		String expected = null;
+		String cardError = null;
 		Properties assertCfg = new Properties();
 		try {
 			InputStream input = new FileInputStream("C:\\Tests\\configs\\" + fileName + ".properties");
-			InputStreamReader inputReader = new InputStreamReader(input, "UTF-8");
-			assertCfg.load(inputReader);
-			expected = assertCfg.getProperty("title.mobile");
-			
+			assertCfg.load(input);
+			cardError = assertCfg.getProperty("cardError");
 		} catch (FileNotFoundException e) {
 			log.add("Could not find file - C:\\Tests\\configs\\" + fileName + ".properties");
 			System.exit(1);
 		} 
-		if (expected == null) {
-			log.add("Title value could not be found in C:\\Tests\\configs\\" + fileName + ".properties");
+		if (cardError == null) {
+			log.add("Card error value could not be found in C:\\Tests\\configs\\" + fileName + ".properties");
 			System.exit(1);
 		}
-		
-		driver.get("http://m.suitdirect.co.uk");
-		String title = driver.getTitle();
-		Boolean success = title.equals(expected);
-		
-		if (!success) {
-			log.add("Retrieved title did not match the expected title");
-			log.add("Expected: " + expected);
-			log.add("Retrieved: " + title);
-			msg.send("Retrieved title did not match the expected title \n\nExpected: " + expected + "\nRetrieved: " + title);
-		} else {
-			log.add("Expected title matched retrieved title");
+
+		SendMessages msg = new SendMessages(testName, fileName, sessionId);
+
+		try {
+
+			driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+
+			WebDriverWait wait = new WebDriverWait(driver, 10);
+
+			String[] products = { "TE910975", "TE910976", "TE910977", "TE910978", "SC910787", "AS910947", "SC910786",
+					"SC910905", "SC910792", "SC910900", "SC910902", "SC910901", "TE9140450", "LH920678", "TE920979",
+					"LH920448", "TE920980", "SC910790", "SC910908", "SC910788", "SC910911", "SC910913", "SC910789",
+					"SC910912", "ST940959", "ST940960", "ST940961", "ST940962", "TE960883", "LH940888", "LH980884",
+					"TE960881", "LH980886", "ST960937", "9222107", "SC910906", "ST960963", "OC511011", "OC511012",
+					"OC511013", "OC511015", "OC511016", "BR930951", "LH970942", "RG970921", "LH970943", "RG970922",
+					"AS970945", "9850006", "0040300", "0040301", "LH910913", "TE910912", "TE910915", "0037657",
+					"0037661", "0037666", "TE910917", "TE910795", "TE910916", "TE910914", "LH910616", "WH510426",
+					"WH910425", "LH910967", "LH910968", "TE910970", "TE910971", "TE910972", "TE910973", "TE910974" };
+			driver.get("https://www.suitdirect.co.uk/");
+			driver.findElement(By.name("search")).clear();
+
+			log.add("Trying product with ID " + products[0]);
+			driver.findElement(By.name("search")).sendKeys(products[0]);
+			driver.findElement(By.xpath("//*[@id='search']/a")).click();
+
+			// Checks if product can not be found. Iterate through array until a product is found.
+			if (driver.findElement(By.className("itemListContainer")).getText()
+					.contains("Sorry no products were found.")) {
+				for (int i = 1; i < products.length; i++) {
+					driver.findElement(By.name("search")).clear();
+
+					log.add("Trying product with ID " + products[i]);
+					driver.findElement(By.name("search")).sendKeys(products[i]);
+					driver.findElement(By.xpath("//*[@id='search']/a")).click();
+
+					// Check if product is found, exit loop if present
+					if (!(driver.findElement(By.className("itemListContainer")).getText()
+							.contains("Sorry no products were found."))) {
+						break;
+					}
+				}
+			}
+
+			// Add to Bag and go to Basket
+			driver.findElement(By.cssSelector("div.itemImage > a")).click();
+			driver.findElement(By.className("btnAddToBag")).click();
+
+			// Wait 5 seconds max for modal to be clickable, then proceed
+			WebElement modal = driver.findElement(By.xpath("//*[@id='cboxLoadedContent']/div/div/div/a[1]"));
+			wait.until(ExpectedConditions.elementToBeClickable(modal));
+			modal.click();
+
+			// Checkout
+			driver.findElement(By.className("bigbutton")).click();
+
+			// Login
+			driver.findElement(By.id("content_txtUserName")).clear();
+			driver.findElement(By.id("content_txtUserName")).sendKeys("checkouttester@remarkable.net");
+			driver.findElement(By.id("content_txtPassword")).clear();
+			driver.findElement(By.id("content_txtPassword")).sendKeys("checkouttester");
+			driver.findElement(By.id("content_btnLogin")).click();
+
+			// Go to Payment
+			driver.findElement(By.id("content_chkAgree")).click();
+			driver.findElement(By.id("content_LinkButton1")).click();
+
+			WebElement iframe = driver.findElement(By.cssSelector(".adminbox > iframe"));
+
+			// Switch focus to iFrame
+			driver.switchTo().frame(iframe);
+
+			// Enter payment details and submit
+			driver.findElement(By.id("inputCardNumber")).clear();
+			driver.findElement(By.id("inputCardNumber")).sendKeys("5404000000000043");
+
+			Select expiryMonth = new Select(driver.findElement(By.id("expiryMonth")));
+			expiryMonth.selectByVisibleText("05");
+			Select expiryYear = new Select(driver.findElement(By.id("expiryYear")));
+			expiryYear.selectByVisibleText("2017");
+
+			driver.findElement(By.id("inputSecurity")).clear();
+			driver.findElement(By.id("inputSecurity")).sendKeys("123");
+
+			driver.findElement(By.id("proceedButton")).click();
+
+			driver.switchTo().defaultContent();
+			driver.switchTo().frame(iframe);
+			wait.until(ExpectedConditions.invisibilityOfElementWithText(By.className("bodytextbold"), "Please wait while your transaction is authorised with the bank."));
+
+			String errorText = driver.findElement(By.id("formCardDetails")).getText();
+			Boolean checkExpected = errorText.contains(cardError);
+			
+			if (!checkExpected) {
+				msg.send("Expected text could not be found. \n\nExpected: " + cardError + "\n\nReturned: " + errorText);
+			}
+			
+			assertTrue(checkExpected);
+
+		} catch (Exception e) {
+			String eS = e.toString();
+			log.add("Exception found");
+			log.add(eS);
+
+			msg.send(eS);
+			
+			// Force fail for Sauce Labs
+			assertTrue(false);
 		}
 
-		assertTrue(success);
 	}
 
 	/**
